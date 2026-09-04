@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Coin Runner Game</title>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #87CEEB;
+    font-family: Arial, sans-serif;
+}
+
+#game {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(#87CEEB 70%, #4CAF50 70%);
+}
+
+#player {
+    position: absolute;
+    bottom: 30%;
+    left: 80px;
+    font-size: 60px;
+    z-index: 2;
+}
+
+.coin {
+    position: absolute;
+    font-size: 40px;
+    animation: moveCoin 3s linear forwards;
+}
+
+@keyframes moveCoin {
+    from {
+        right: -50px;
+    }
+    to {
+        right: 110%;
+    }
+}
+
+#score {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+    background: #0008;
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+#jumpButton {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    font-size: 25px;
+    padding: 20px;
+    border: none;
+    border-radius: 50%;
+    background: orange;
+    color: white;
+}
+
+.jump {
+    animation: jump 0.7s ease-out;
+}
+
+@keyframes jump {
+    0%, 100% {
+        bottom: 30%;
+    }
+    50% {
+        bottom: 65%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <div id="score">🪙 Coins: 0</div>
+
+    <div id="player">🏃</div>
+
+    <button id="jumpButton">JUMP</button>
+
+</div>
+
+<script>
+
+let score = 0;
+
+const player = document.getElementById("player");
+const game = document.getElementById("game");
+const scoreText = document.getElementById("score");
+
+function jump() {
+
+    if (player.classList.contains("jump")) return;
+
+    player.classList.add("jump");
+
+    setTimeout(() => {
+        player.classList.remove("jump");
+    }, 700);
+}
+
+document.getElementById("jumpButton").addEventListener("click", jump);
+
+document.addEventListener("keydown", function(event) {
+
+    if (event.code === "Space") {
+        jump();
+    }
+
+});
+
+function createCoin() {
+
+    const coin = document.createElement("div");
+
+    coin.classList.add("coin");
+    coin.innerHTML = "🪙";
+
+    coin.style.top = Math.random() * 60 + 20 + "%";
+
+    game.appendChild(coin);
+
+    const checkCoin = setInterval(() => {
+
+        const playerRect = player.getBoundingClientRect();
+        const coinRect = coin.getBoundingClientRect();
+
+        if (
+            playerRect.left < coinRect.right &&
+            playerRect.right > coinRect.left &&
+            playerRect.top < coinRect.bottom &&
+            playerRect.bottom > coinRect.top
+        ) {
+
+            score++;
+
+            scoreText.innerHTML = "🪙 Coins: " + score;
+
+            coin.remove();
+
+            clearInterval(checkCoin);
+        }
+
+    }, 20);
+
+    setTimeout(() => {
+
+        coin.remove();
+        clearInterval(checkCoin);
+
+    }, 3000);
+
+}
+
+setInterval(createCoin, 1500);
+
+</script>
+
+</body>
+</html>
